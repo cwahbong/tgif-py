@@ -1,59 +1,141 @@
 """ Abilities, including both positive and negative.
 """
 
-class Ability:
+class Base:
     """ Base.
-        TODO
     """
 
-    def use_once(self, context):
+    def __init__(self, effect, optional):
+        self._optional = optional
+        self._effect = effect
+
+    def use(self, context):
+        if self._optional:
+            return False
+        return self._effect(context)
+
+
+def null():
+    """ Null ability.
+    """
+    def _effect(context):
+        # pylint: disable=W0613
         pass
 
-    def end_of_fight(self, context):
-        pass
+    return Base(_effect, False)
 
-class BelowThePile(Ability):
+
+def below_the_pile():
     """ Put 1 card to the bottom of pile.
     """
+    def _effect(context):
+        """ TODO below the pile effect
+        """
 
-class Cards(Ability):
+    return Base(_effect, True)
+
+
+def cards(num):
     """ More free cards.
     """
+    def _effect(context):
+        """ TODO cards effect
+        """
 
-class Copy(Ability):
+    return Base(_effect, True)
+
+
+def copy():
     """ Copy 1 ability.
     """
+    def _effect(context):
+        """ TODO copy effect
+        """
 
-class Destroy(Ability):
+    return Base(_effect, True)
+
+
+def destroy():
     """ Destroy 1 card.
     """
+    def _effect(context):
+        """ TODO copy effect
+        """
 
-class Double(Ability):
+    return Base(_effect, True)
+
+
+def double():
     """ Double fighting value of 1 card.
     """
+    def _effect(context):
+        """ TODO double effect
+        """
 
-class Exchange(Ability):
-    pass
+    return Base(_effect, True)
 
-class Life(Ability):
-    """ Add life(s).
+
+def exchange(num):
+    """ Discard 1 card then draw 1 card.  Repeat n times.
     """
+    def _effect(context):
+        """ TODO exchange effect
+        """
 
-class Step(Ability):
-    pass
-
-class Sort(Ability):
-    pass
+    return Base(_effect, True)
 
 
-class HighestZero(Ability):
+def life(num):
+    """ Add n life(s).
+    """
+    def _effect(context):
+        """ TODO life effect
+        """
+
+    return Base(_effect, True)
+
+
+def step():
+    """ Step - 1
+    """
+    def _effect(context):
+        """ TODO step effect
+        """
+
+    return Base(_effect, True)
+
+
+def sort():
+    """ Sort 3 cards / discard 1 of 3
+    """
+    def _effect(context):
+        pass
+
+    return Base(_effect, True)
+
+
+def highest_zero():
     """ Make highest fighing value to zero.  Cannot effect to same card again.
     """
+    def _effect(context):
+        pass
 
-class NegLife(Ability):
+    return Base(_effect, False)
+
+
+def neg_life(num):
     """ Lose life at the end of fight.
     """
+    def _effect(context):
+        pass
 
-class Stop(Ability):
+    return Base(_effect, False)
+
+
+def stop():
     """ Stop draw free card immediatly.
     """
+    def _effect(context):
+        pass
+
+    return Base(_effect, False)

@@ -1,12 +1,10 @@
 """ Card classes and functions go here.
 """
 
-import itertools
-
 from tgif import ability
 
 class Knowledge:
-    def __init__(self, fighting_value, destroy_value, fighting_ability=ability.Ability()):
+    def __init__(self, fighting_value, destroy_value, fighting_ability=ability.null()):
         self._fighting_value = fighting_value
         self._destroy_value = destroy_value
         self._ability = fighting_ability
@@ -37,7 +35,7 @@ class Knowledge:
 
 class Hazard:
 
-    def __init__(self, free_cards_num, hazard_values, hazard_ability=ability.Ability()):
+    def __init__(self, free_cards_num, hazard_values, hazard_ability=ability.null()):
         self._free_cards_num = free_cards_num
         self._hazard_values = tuple(hazard_values)
         assert len(self._hazard_values) == 3
@@ -81,11 +79,13 @@ class PirateCard:
     # TODO special ability of pirate
 
 
-def starting(fighting_value, fighting_ability=ability.Ability()):
+def starting(fighting_value, fighting_ability=ability.null()):
     return FightingCard(Knowledge(fighting_value, 1, fighting_ability))
 
-def aging(fighting_value, fighting_ability=ability.Ability()):
+
+def aging(fighting_value, fighting_ability=ability.null()):
     return FightingCard(Knowledge(fighting_value, 2, fighting_ability))
+
 
 _hazard_values = (
     None,
@@ -98,6 +98,7 @@ _hazard_values = (
 def hazard(level):
     return Hazard(level, _hazard_values[level])
 
-def adventure(fighting_value, knowledge_ability, hazard_level):
+
+def adventure(hazard_level, fighting_value, knowledge_ability):
     return FightingCard(Knowledge(fighting_value, knowledge_ability),
             hazard(hazard_level))
