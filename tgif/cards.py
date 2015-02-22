@@ -9,11 +9,11 @@ def startings():
     """ All 18 starting cards.
     """
     return itertools.chain(
-        (card.starting(2))  * 1,
-        (card.starting(1))  * 3,
-        (card.starting(0))  * 8,
+        (card.starting(2))                  * 1,
+        (card.starting(1))                  * 3,
+        (card.starting(0))                  * 8,
         (card.starting(0, ability.life(2))) * 1,
-        (card.starting(-1)) * 5,
+        (card.starting(-1))                 * 5,
     )
 
 def adventures():
