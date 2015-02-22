@@ -8,18 +8,12 @@ class Base:
     def __init__(self, effect, optional, stop_draw=False):
         self._effect = effect
         self._optional = optional
-        self._used = False
         self._stop_draw = stop_draw
 
-    @property
-    def stop_draw(self):
-        return self._stop_draw
-
-    @property
-    def effect(self):
-        """ Effect function specified by the ability.
+    def effect(self, context, agent):
+        """ Effect specified by the ability.
         """
-        return self._effect
+        return self._effect(context, agent)
 
     @property
     def optional(self):
@@ -28,19 +22,13 @@ class Base:
         return self._optional
 
     @property
-    def used(self):
-        """ Indicated that if the card has been used in this battle.
+    def stop_draw(self):
+        """ Indicates that if agent must stop draw free cards.
         """
-        return self._used
+        return self._stop_draw
 
-    def use(self, context):
-        """ Use the card in battle.
-        """
-        if self._used:
-            return False
-        return self._effect(context)
 
-def _null_effect(context):
+def _null_effect(context, agent):
     """ An effect that does nothing.
     """
     # pylint: disable=W0613
@@ -55,10 +43,10 @@ def null():
 def below_the_pile():
     """ Put 1 card to the bottom of pile.
     """
-    def _effect(context):
+    def _effect(context, agent):
         """ See module docstring.
         """
-        card = context.agent.select(context.visible, context.battle_field.cards)
+        card = agent.select(context.visible, context.battle_field.cards)
         context.own_pile.put_below(card)
 
     return Base(_effect, True)
@@ -67,7 +55,7 @@ def below_the_pile():
 def cards(num):
     """ More free cards.
     """
-    def _effect(context):
+    def _effect(context, agent):
         """ See module docstring.
         """
         context.battle_field.free_card_num += num
@@ -78,10 +66,10 @@ def cards(num):
 def copy():
     """ Copy 1 ability.
     """
-    def _effect(context):
+    def _effect(context, agent):
         """ See module docstring.
         """
-        card = context.agent.select(context.visible, context.turn.cards)
+        card = agent.select(context.visible, context.turn.cards)
         card.effect(context)
 
     return Base(_effect, True)
@@ -90,10 +78,10 @@ def copy():
 def destroy():
     """ Destroy 1 card.
     """
-    def _effect(context):
+    def _effect(context, agent):
         """ See module docstring.
         """
-        card = context.agent.select(context.visible, context.turn.cards)
+        card = agent.select(context.visible, context.turn.cards)
         context.battle_field.destroy(card)
 
     return Base(_effect, True)
@@ -102,10 +90,10 @@ def destroy():
 def double():
     """ Double fighting value of 1 card.
     """
-    def _effect(context):
+    def _effect(context, agent):
         """ See module docstring.
         """
-        card = context.agent.select(context.visible, context.turn.cards)
+        card = agent.select(context.visible, context.turn.cards)
         context.battle_field.double(card)
 
     return Base(_effect, True)
@@ -114,11 +102,11 @@ def double():
 def exchange(num):
     """ Discard 1 card then draw 1 card.  Repeat n times.
     """
-    def _effect(context):
+    def _effect(context, agent):
         """ See module docstring.
         """
         for _ in num:
-            card = context.agent.select(context.battle_field.cards)
+            card = agent.select(context.battle_field.cards)
             context.battle_field.exchange(card, context.own_pile.draw())
 
     return Base(_effect, True)
@@ -127,7 +115,7 @@ def exchange(num):
 def life(num):
     """ Add n life(s).
     """
-    def _effect(context):
+    def _effect(context, agent):
         """ See module docstring.
         """
         context.life += num
@@ -138,7 +126,7 @@ def life(num):
 def step():
     """ Step - 1
     """
-    def _effect(context):
+    def _effect(context, agent):
         """ See module docstring.
         """
         context.battle_field.step -= 1
@@ -149,7 +137,7 @@ def step():
 def sort():
     """ Sort 3 cards / discard 1 of 3
     """
-    def _effect(context):
+    def _effect(context, agent):
         """ See module docstring.
         """
         sorted_cards = [context.own_pile.draw() for _ in range(3)]
@@ -162,7 +150,7 @@ def sort():
 def highest_zero():
     """ Make highest fighing value to zero.  Cannot effect to same card again.
     """
-    def _effect(context):
+    def _effect(context, agent):
         """ See module docstring.
         """
         context.battle_field.highest_zero += 1
@@ -173,7 +161,7 @@ def highest_zero():
 def neg_life(num):
     """ Lose life.
     """
-    def _effect(context):
+    def _effect(context, agent):
         """ See module docstring.
         """
         context.life -= num
