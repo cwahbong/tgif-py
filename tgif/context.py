@@ -3,16 +3,19 @@
 
 from tgif import battle_field, exception, pile, turn
 
+
+def starting_life(level):
+    """ Get the initial life by given level.
+    """
+    return 20 if level < 4 else 18
+
+
 class Context:
     """ See module doc.
     """
     def __init__(self, level):
-        # TODO prepare the aging pile
-        # TODO prepare the own pile by level
-        self._life = 0
-        self.own_pile = pile.Pile([])
-        self.adventure_pile = pile.Pile([])
-        self.pirate_pile = pile.Pile([])
+        self._life = starting_life(level)
+        self.piles = pile.Piles(level)
         self.turn = turn.Adventure()
         self.battle_field = battle_field.BattleField()
 
@@ -42,7 +45,6 @@ class Context:
             """
             return -5 if card.destroy_value == 2 else card.fighting_value
         life_score = self.life * 5
-        own_pile_score = sum(_own_score(card) for card in self.own_pile.all_cards())
-        pirate_score = len(self.pirate_pile.discarded_cards()) * 5
+        own_pile_score = sum(_own_score(card) for card in self.piles.own.all_cards())
+        pirate_score = len(self.piles.pirate.discarded_cards()) * 5
         return life_score + own_pile_score + pirate_score
-

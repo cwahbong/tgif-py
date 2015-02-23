@@ -1,12 +1,17 @@
+"""
+"""
+
 import random
+
+from tgif import cards
+
 
 class Pile:
     def __init__(self, cards):
         self._cards = list(cards)
         self._discards = []
-        self.prepare()
 
-    def prepare(self):
+    def shuffle(self):
         """ Gather all cards in the pile and shuffle them.
         """
         self._cards += self._discards
@@ -46,3 +51,47 @@ class Pile:
         all_cards = self._cards + self._discards
         random.shuffle(all_cards)
         return all_cards
+
+
+def shuffled(cards):
+    new_cards = list(cards)
+    random.shuffle(new_cards)
+    return Pile(new_cards)
+
+
+def aging(level):
+    difficult_agings = cards.difficult_agings()
+    random.shuffle(difficult_agings)
+    normal_agings = cards.normal_agings()
+    if level < 3:
+        normal_agings = normal_agings[:-1]
+    random.shuffle(normal_agings)
+    return Pile(difficult_agings + normal_agings)
+
+
+def own(level, aging_pile):
+    startings = cards.startings()
+    if level >= 2:
+        startings.append(aging_pile.draw())
+    return shuffled(startings)
+
+
+def adventure():
+    return shuffled(cards.adventures())
+
+
+def pirate():
+    pirates = cards.pirates()
+    assert pirates >= 2
+    random.shuffle(pirates)
+    return Pile(pirates[:2])
+
+
+class Piles:
+    """ All card piles here.
+    """
+    def __init__(self, level):
+        self.aging = aging(level)
+        self.own = own(level, self.aging)
+        self.adventure = adventure()
+        self.pirate = pirate()
