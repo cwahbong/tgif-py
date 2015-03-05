@@ -1,5 +1,6 @@
 """ An agent does actions in a game.
 """
+import sys
 
 class Base:
     """ Agent interface.
@@ -26,7 +27,7 @@ class Base:
         raise NotImplementedError()
 
 
-class FileAgent(Base):
+class File(Base):
     """ An agent by given input file and output file.
     """
 
@@ -97,3 +98,6 @@ class FileAgent(Base):
                 break
             else:
                 self._print("Invalid action \"{}\"".format(action))
+
+def console():
+    return File(sys.stdin, sys.stdout)
