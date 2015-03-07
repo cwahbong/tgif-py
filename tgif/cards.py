@@ -14,7 +14,7 @@ def startings():
         [card.starting(0)]                  * 8,
         [card.starting(0, ability.life(2))] * 1,
         [card.starting(-1)]                 * 5,
-    )
+        )
 
 def adventures():
     """ All adventure cards.
@@ -49,7 +49,7 @@ def adventures():
         [card.adventure(4, 3, ability.sort())]           * 1,
         # level 5
         [card.adventure(5, 4, ability.null())]           * 2,
-    )
+        )
 
 def normal_agings():
     """ All normal aging cards.
@@ -61,7 +61,7 @@ def normal_agings():
         [card.aging(-1)]                        * 1,
         [card.aging(-2)]                        * 2,
         [card.aging(-3)]                        * 1,
-    )
+        )
 
 def difficult_agings():
     """ All 3 difficult aging cards.
@@ -70,7 +70,7 @@ def difficult_agings():
         card.aging(-4),
         card.aging(-5),
         card.aging(0, ability.neg_life(2)),
-    )
+        )
 
 def pirates():
     """ All pirate cards.
