@@ -1,5 +1,4 @@
 import argparse
-import sys
 
 from tgif import (
     agent,
@@ -7,7 +6,7 @@ from tgif import (
     )
 
 argparser = argparse.ArgumentParser()
-argparser.add_argument("-l", "--level", type=int)
+argparser.add_argument("-l", "--level", type=int, required=True)
 
 
 def main():
