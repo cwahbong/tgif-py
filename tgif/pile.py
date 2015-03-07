@@ -60,9 +60,9 @@ def shuffled(cards):
 
 
 def aging(level):
-    difficult_agings = cards.difficult_agings()
+    difficult_agings = list(cards.difficult_agings())
     random.shuffle(difficult_agings)
-    normal_agings = cards.normal_agings()
+    normal_agings = list(cards.normal_agings())
     if level < 3:
         normal_agings = normal_agings[:-1]
     random.shuffle(normal_agings)
@@ -77,12 +77,13 @@ def own(level, aging_pile):
 
 
 def adventure():
+    print(cards.adventures())
     return shuffled(cards.adventures())
 
 
 def pirate():
     pirates = cards.pirates()
-    assert pirates >= 2
+    assert len(pirates) >= 2
     random.shuffle(pirates)
     return Pile(pirates[:2])
 

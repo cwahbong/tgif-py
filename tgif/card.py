@@ -87,7 +87,7 @@ def aging(fighting_value, fighting_ability=ability.null()):
     return FightingCard(Knowledge(fighting_value, 2, fighting_ability))
 
 
-_hazard_values = (
+_hazards = (
     None,
     Hazard(1, (0, 1, 3)),
     Hazard(2, (1, 3, 6)),
@@ -96,7 +96,7 @@ _hazard_values = (
     Hazard(5, (5, 9, 14)),
 )
 def hazard(level):
-    return Hazard(level, _hazard_values[level])
+    return _hazards[level]
 
 
 def adventure(hazard_level, fighting_value, knowledge_ability):
