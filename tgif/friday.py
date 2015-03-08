@@ -25,7 +25,7 @@ class Friday:
         """
         self._won = False
         try:
-            while not self._context.turn.game_ended():
+            while not self._context.turn.game_ended(self._context):
                 self._context.turn.execute(self._context, self._agent)
             self._won = True
         except exception.GameOver:
