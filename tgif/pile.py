@@ -82,10 +82,8 @@ def adventure():
 
 
 def pirate():
-    pirates = cards.pirates()
-    assert len(pirates) >= 2
-    random.shuffle(pirates)
-    return Pile(pirates[:2])
+    assert len(cards.pirates()) >= 2
+    return Pile(random.sample(cards.pirates(), 2))
 
 
 class Piles:

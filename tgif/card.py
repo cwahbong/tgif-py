@@ -71,14 +71,6 @@ class FightingCard:
     # TODO other functions in hazard
 
 
-class PirateCard:
-
-    def __init__(self, hazard_card):
-        self._hazard = hazard_card
-
-    # TODO special ability of pirate
-
-
 def starting(fighting_value, fighting_ability=ability.null()):
     return FightingCard(Knowledge(fighting_value, 1, fighting_ability))
 
@@ -102,3 +94,12 @@ def hazard(level):
 def adventure(hazard_level, fighting_value, knowledge_ability):
     return FightingCard(Knowledge(fighting_value, knowledge_ability),
             hazard(hazard_level))
+
+
+class Pirate:
+
+    def __init__(self, free_cards_num, hazard_value, pirate_ability=None):
+        self._free_cards_num = free_cards_num
+        self._hazard_value = hazard_value
+        self._ability = pirate_ability
+        # TODO special ability of pirate

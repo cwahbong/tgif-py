@@ -75,4 +75,15 @@ def difficult_agings():
 def pirates():
     """ All pirate cards.
     """
-    return ()
+    return (
+        # card.pirate(5, *, aging * 2),
+        # card.pirate(*, *, all unresolved adventures),
+        # card.pirate(7, 16, additional fight = 2 life),
+        card.Pirate(6, 20),
+        # card.pirate(9, 22, half fightings cards counted),
+        card.Pirate(7, 25),
+        card.Pirate(8, 30),
+        card.Pirate(9, 35),
+        card.Pirate(10, 40),
+        # card.pirate(10, 52, fighting value += num of fighting cards),
+        )
