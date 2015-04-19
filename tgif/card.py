@@ -70,6 +70,12 @@ class FightingCard:
 
     # TODO other functions in hazard
 
+    def __str__(self):
+        return "FightingCard F<{}> D<{}> A<{}>".format(
+            self.fighting_value,
+            self.destroy_value,
+            self._knowledge._ability._name)
+
 
 def starting(fighting_value, fighting_ability=ability.null()):
     return FightingCard(Knowledge(fighting_value, 1, fighting_ability))
@@ -92,7 +98,7 @@ def hazard(level):
 
 
 def adventure(hazard_level, fighting_value, knowledge_ability):
-    return FightingCard(Knowledge(fighting_value, knowledge_ability),
+    return FightingCard(Knowledge(fighting_value, 1, knowledge_ability),
             hazard(hazard_level))
 
 

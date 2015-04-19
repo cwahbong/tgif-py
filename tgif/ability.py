@@ -5,7 +5,8 @@ class Base:
     """ Base.
     """
 
-    def __init__(self, effect, optional, stop_draw=False):
+    def __init__(self, name, effect, optional, stop_draw=False):
+        self._name = name
         self._effect = effect
         self._optional = optional
         self._stop_draw = stop_draw
@@ -37,7 +38,7 @@ def _null_effect(context, agent):
 def null():
     """ Null ability.
     """
-    return Base(_null_effect, False)
+    return Base("none", _null_effect, False)
 
 
 def below_the_pile():
@@ -49,7 +50,7 @@ def below_the_pile():
         card = agent.select(context.visible, context.battle_field.cards)
         context.own_pile.put_below(card)
 
-    return Base(_effect, True)
+    return Base("below the pile", _effect, True)
 
 
 def cards(num):
@@ -60,7 +61,7 @@ def cards(num):
         """
         context.battle_field.free_card_num += num
 
-    return Base(_effect, True)
+    return Base("cards", _effect, True)
 
 
 def copy():
@@ -72,7 +73,7 @@ def copy():
         card = agent.select(context.visible, context.turn.cards)
         card.effect(context)
 
-    return Base(_effect, True)
+    return Base("copy", _effect, True)
 
 
 def destroy():
@@ -84,7 +85,7 @@ def destroy():
         card = agent.select(context.visible, context.turn.cards)
         context.battle_field.destroy(card)
 
-    return Base(_effect, True)
+    return Base("destroy", _effect, True)
 
 
 def double():
@@ -96,7 +97,7 @@ def double():
         card = agent.select(context.visible, context.turn.cards)
         context.battle_field.double(card)
 
-    return Base(_effect, True)
+    return Base("double", _effect, True)
 
 
 def exchange(num):
@@ -109,7 +110,7 @@ def exchange(num):
             card = agent.select(context.battle_field.cards)
             context.battle_field.exchange(card, context.own_pile.draw())
 
-    return Base(_effect, True)
+    return Base("exchange", _effect, True)
 
 
 def life(num):
@@ -120,7 +121,7 @@ def life(num):
         """
         context.life += num
 
-    return Base(_effect, True)
+    return Base("life", _effect, True)
 
 
 def step():
@@ -131,7 +132,7 @@ def step():
         """
         context.battle_field.step -= 1
 
-    return Base(_effect, True)
+    return Base("step - 1", _effect, True)
 
 
 def sort():
@@ -144,7 +145,7 @@ def sort():
         # TODO optional discard one card.
         # TODO put 2 ~ 3 cards back to the top of pile.
 
-    return Base(_effect, True)
+    return Base("sort", _effect, True)
 
 
 def highest_zero():
@@ -155,7 +156,7 @@ def highest_zero():
         """
         context.battle_field.highest_zero += 1
 
-    return Base(_effect, False)
+    return Base("highest = 0", _effect, False)
 
 
 def neg_life(num):
@@ -166,10 +167,10 @@ def neg_life(num):
         """
         context.life -= num
 
-    return Base(_effect, False)
+    return Base("life -", _effect, False)
 
 
 def stop():
     """ Stop draw free card immediatly.
     """
-    return Base(_null_effect, False, True)
+    return Base("stop", _null_effect, False, True)
