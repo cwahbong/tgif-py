@@ -40,7 +40,7 @@ class File(Base):
         """ Get trimmed input line.
         """
         line = self._i_file.readline()
-        return line.trim() if line is not None else None
+        return line.strip() if line is not None else None
 
     def _print(self, string):
         """ Print string in a line.
@@ -75,6 +75,8 @@ class File(Base):
             return None
 
     def select_enemy(self, visible, enemies):
+        for idx, enemy in enumerate(enemies):
+            self._print("[{}] {}".format(idx, enemy))
         self._print("Select enemy <index>:")
         return self._select(visible, enemies)
 
@@ -87,8 +89,7 @@ class File(Base):
             self._print("Select action (draw/use/end):")
             action = self._input()
             if action == "draw":
-                self._draw() # TODO
-                self._print("Draw a card.")
+                self._print("Draw a card, not yet implemented.")
             elif action == "use":
                 idx = self.select_card(visible, visible.cards)
                 visible.cards[idx].use()

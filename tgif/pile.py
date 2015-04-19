@@ -23,6 +23,9 @@ class Pile:
         """
         return self._cards.pop()
 
+    def multidraw(self, num):
+        return [self._cards.pop() for _ in range(num)]
+
     def put_top(self, card):
         """ Put a card at the top of pile.
         """
@@ -77,7 +80,6 @@ def own(level, aging_pile):
 
 
 def adventure():
-    print(cards.adventures())
     return shuffled(cards.adventures())
 
 

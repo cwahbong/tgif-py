@@ -21,7 +21,7 @@ class Base:
         fight = self._get_fight(context, agent)
         if fight is not None:
             context.battle_field.new_battle(fight)
-            for action in agent.battle(context.visible_part, fight):
+            for action in agent.battle(context, fight):
                 action(context)
             if context.battle_field.won():
                 context.own_pile.discard(fight)
@@ -29,7 +29,7 @@ class Base:
                 damage = context.battle_field.health_lose()
                 context.adventure_pile.discard(fight)
                 context.life -= damage
-                agent.discard(context.controller, damage)
+                agent.discard(context, damage)
         self._end(context, agent)
 
     def game_ended(self, context):
@@ -43,7 +43,7 @@ class Pirate(Base):
     """
     def _get_fight(self, context, agent):
         pirates = None # TODO Take pirates from context
-        return context.agent.select_one(context.visible_part, pirates)
+        return context.agent.select_one(context, pirates)
 
     def _end(self, context, agent):
         pass
@@ -59,14 +59,16 @@ class Adventure(Base):
         self._count = 0
 
     def _get_fight(self, context, agent):
-        adventures = None # TODO take 2 adventures from context
+        adventures = context.piles.adventure.multidraw(2)
         if len(adventures) == 1:
-            if agent.optional(context.controller, adventures[0]):
+            if agent.optional_enemy(context, adventures[0]):
                 return adventures[0]
             else:
                 return None
         else:
-            idx = agent.select_one(context.controller, adventures)
+            idx = None
+            while idx is None:
+                idx = agent.select_enemy(context, adventures)
             return adventures[idx]
 
     def _end(self, context, agent):
