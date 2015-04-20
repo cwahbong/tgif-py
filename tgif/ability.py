@@ -5,8 +5,8 @@ class Base:
     """ Base.
     """
 
-    def __init__(self, name, effect, optional, stop_draw=False):
-        self._name = name
+    def __init__(self, name_info, effect, optional, stop_draw=False):
+        self._name_info = name_info
         self._effect = effect
         self._optional = optional
         self._stop_draw = stop_draw
@@ -27,6 +27,10 @@ class Base:
         """ Indicates that if agent must stop draw free cards.
         """
         return self._stop_draw
+
+    @property
+    def name(self):
+        return self._name_info
 
 
 def _null_effect(context, agent):
@@ -100,28 +104,51 @@ def double():
     return Base("double", _effect, True)
 
 
-def exchange(num):
-    """ Discard 1 card then draw 1 card.  Repeat n times.
-    """
-    def _effect(context, agent):
-        """ See module docstring.
-        """
-        for _ in num:
+class Exchange(Base):
+    def __init__(self, num):
+        super().__init__("Exchange {}", None, True)
+        self._num = num
+
+    def effect(self, context, agent):
+        for _ in self._num:
             card = agent.select(context.battle_field.cards)
             context.battle_field.exchange(card, context.own_pile.draw())
 
-    return Base("exchange", _effect, True)
+    @property
+    def name(self):
+        return self._name_info.format(self._num)
 
 
-def life(num):
-    """ Add n life(s).
-    """
-    def _effect(context, agent):
-        """ See module docstring.
-        """
-        context.life += num
+exchange = Exchange
 
-    return Base("life", _effect, True)
+
+#def exchange(num):
+#    """ Discard 1 card then draw 1 card.  Repeat n times.
+#    """
+#    def _effect(context, agent):
+#        """ See module docstring.
+#        """
+#        for _ in num:
+#            card = agent.select(context.battle_field.cards)
+#            context.battle_field.exchange(card, context.own_pile.draw())
+#
+#    return Base("exchange", _effect, True)
+
+
+class Life(Base):
+    def __init__(self, num):
+        super().__init__("life +{}", None, True)
+        self._num = num
+
+    def effect(self, context, agent):
+        context.life += self._num
+
+    @property
+    def name(self):
+        return self._name_info.format(self._num)
+
+
+life = Life
 
 
 def step():

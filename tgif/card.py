@@ -74,7 +74,7 @@ class FightingCard:
         return "FightingCard F<{}> D<{}> A<{}>".format(
             self.fighting_value,
             self.destroy_value,
-            self._knowledge._ability._name)
+            self._knowledge._ability.name)
 
 
 def starting(fighting_value, fighting_ability=ability.null()):
