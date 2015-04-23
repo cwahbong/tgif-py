@@ -4,7 +4,7 @@
 from tgif import ability
 
 class Knowledge:
-    def __init__(self, fighting_value, destroy_value, fighting_ability=ability.null()):
+    def __init__(self, fighting_value, destroy_value, fighting_ability=ability.Null()):
         self._fighting_value = fighting_value
         self._destroy_value = destroy_value
         self._ability = fighting_ability
@@ -35,7 +35,7 @@ class Knowledge:
 
 class Hazard:
 
-    def __init__(self, free_cards_num, hazard_values, hazard_ability=ability.null()):
+    def __init__(self, free_cards_num, hazard_values, hazard_ability=ability.Null()):
         self._free_cards_num = free_cards_num
         self._hazard_values = tuple(hazard_values)
         assert len(self._hazard_values) == 3
@@ -77,11 +77,11 @@ class FightingCard:
             self._knowledge._ability.name)
 
 
-def starting(fighting_value, fighting_ability=ability.null()):
+def starting(fighting_value, fighting_ability=ability.Null()):
     return FightingCard(Knowledge(fighting_value, 1, fighting_ability))
 
 
-def aging(fighting_value, fighting_ability=ability.null()):
+def aging(fighting_value, fighting_ability=ability.Null()):
     return FightingCard(Knowledge(fighting_value, 2, fighting_ability))
 
 

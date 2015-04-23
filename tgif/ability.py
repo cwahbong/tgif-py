@@ -1,203 +1,185 @@
 """ Abilities, including both positive and negative.
 """
+import numbers
 
 class Base:
     """ Base.
     """
 
-    def __init__(self, name_info, effect, optional, stop_draw=False):
-        self._name_info = name_info
-        self._effect = effect
-        self._optional = optional
-        self._stop_draw = stop_draw
+    name = "base"
+    """ The name of that card.
+    """
 
-    def effect(self, context, agent):
+    optional = True
+    """ Indicates that if the card effect is optional.
+    """
+
+    stop_draw = False
+    """ Indicates that if agent must stop draw free cards.
+    """
+
+
+    def prepare_battle_effect(self, context, agent):
         """ Effect specified by the ability.
         """
-        return self._effect(context, agent)
 
-    @property
-    def optional(self):
-        """ Indicates that if the card effect is optional.
+    def battle_effect(self, context, agent):
+        """ Effect specified by the ability.
         """
-        return self._optional
 
-    @property
-    def stop_draw(self):
-        """ Indicates that if agent must stop draw free cards.
+    def after_battle_effect(self, context, agent):
+        """ Effect specified by the ability.
         """
-        return self._stop_draw
-
-    @property
-    def name(self):
-        return self._name_info
 
 
-def _null_effect(context, agent):
-    """ An effect that does nothing.
+class PositiveIntegral(Base):
+    """ Base class containing a positive integral num.
     """
-    # pylint: disable=W0613
+
+    def __init__(self, num):
+        if not isinstance(num, numbers.Integral):
+            raise ValueError("num should be integral.")
+        if num <= 0:
+            raise ValueError("num should be positive.")
+        self._num = num
 
 
-def null():
-    """ Null ability.
+class Null(Base):
+    """ An ability that does nothing.
     """
-    return Base("none", _null_effect, False)
+    name = "none"
+    optional = False
 
 
-def below_the_pile():
+class BelowThePile(Base):
     """ Put 1 card to the bottom of pile.
     """
-    def _effect(context, agent):
-        """ See module docstring.
-        """
+    name = "below the pile"
+
+    def prepare_battle_effect(self, context, agent):
         card = agent.select(context.visible, context.battle_field.cards)
         context.own_pile.put_below(card)
 
-    return Base("below the pile", _effect, True)
 
-
-def cards(num):
-    """ More free cards.
+class Cards(PositiveIntegral):
+    """ Add num cards.
     """
-    def _effect(context, agent):
-        """ See module docstring.
-        """
-        context.battle_field.free_card_num += num
+    name = "Cards +{}"
 
-    return Base("cards", _effect, True)
+    def __init__(self, num):
+        super().__init__(num)
+        self.name = Cards.name.format(num)
+
+    def prepare_battle_effect(self, context, agent):
+        context.battle_field.free_card_num += self._num
 
 
-def copy():
+class Copy(Base):
     """ Copy 1 ability.
     """
-    def _effect(context, agent):
-        """ See module docstring.
-        """
+    name = "copy"
+
+    def prepare_battle_effect(self, context, agent):
         card = agent.select(context.visible, context.turn.cards)
         card.effect(context)
 
-    return Base("copy", _effect, True)
 
-
-def destroy():
+class Destroy(Base):
     """ Destroy 1 card.
     """
-    def _effect(context, agent):
-        """ See module docstring.
-        """
+    name = "destroy"
+
+    def prepare_battle_effect(self, context, agent):
         card = agent.select(context.visible, context.turn.cards)
         context.battle_field.destroy(card)
 
-    return Base("destroy", _effect, True)
 
-
-def double():
+class Double(Base):
     """ Double fighting value of 1 card.
     """
-    def _effect(context, agent):
-        """ See module docstring.
-        """
+    name = "double"
+
+    def battle_effect(self, context, agent):
         card = agent.select(context.visible, context.turn.cards)
         context.battle_field.double(card)
 
-    return Base("double", _effect, True)
 
+class Exchange(PositiveIntegral):
+    """ Discard 1 card then draw 1 card.  Repeat num times.
+    """
+    name = "exchange {}"
 
-class Exchange(Base):
     def __init__(self, num):
-        super().__init__("Exchange {}", None, True)
-        self._num = num
+        super().__init__(num)
+        self.name = Exchange.name.format(num)
 
-    def effect(self, context, agent):
+    def prepare_battle_effect(self, context, agent):
         for _ in self._num:
             card = agent.select(context.battle_field.cards)
             context.battle_field.exchange(card, context.own_pile.draw())
 
-    @property
-    def name(self):
-        return self._name_info.format(self._num)
 
+class Life(PositiveIntegral):
+    """ Add num life.
+    """
+    name = "life +{}"
 
-exchange = Exchange
-
-
-#def exchange(num):
-#    """ Discard 1 card then draw 1 card.  Repeat n times.
-#    """
-#    def _effect(context, agent):
-#        """ See module docstring.
-#        """
-#        for _ in num:
-#            card = agent.select(context.battle_field.cards)
-#            context.battle_field.exchange(card, context.own_pile.draw())
-#
-#    return Base("exchange", _effect, True)
-
-
-class Life(Base):
     def __init__(self, num):
-        super().__init__("life +{}", None, True)
-        self._num = num
+        super().__init__(num)
+        self.name = Life.name.format(num)
 
-    def effect(self, context, agent):
+    def prepare_battle_effect(self, context, agent):
         context.life += self._num
 
-    @property
-    def name(self):
-        return self._name_info.format(self._num)
 
-
-life = Life
-
-
-def step():
+class Step(Base):
     """ Step - 1
     """
-    def _effect(context, agent):
-        """ See module docstring.
-        """
+    name = "step -1"
+
+    def battle_effect(self, context, agent):
         context.battle_field.step -= 1
 
-    return Base("step - 1", _effect, True)
 
-
-def sort():
+class Sort(Base):
     """ Sort 3 cards / discard 1 of 3
     """
-    def _effect(context, agent):
-        """ See module docstring.
-        """
+    name = "sort"
+
+    def prepare_battle_effect(self, context, agent):
         sorted_cards = [context.own_pile.draw() for _ in range(3)]
         # TODO optional discard one card.
         # TODO put 2 ~ 3 cards back to the top of pile.
 
-    return Base("sort", _effect, True)
 
-
-def highest_zero():
+class HighestZero(Base):
     """ Make highest fighing value to zero.  Cannot effect to same card again.
     """
-    def _effect(context, agent):
-        """ See module docstring.
-        """
+    name = "highest = 0"
+    optional = False
+
+    def battle_effect(self, context, agent):
         context.battle_field.highest_zero += 1
 
-    return Base("highest = 0", _effect, False)
 
-
-def neg_life(num):
+class NegLife(PositiveIntegral):
     """ Lose life.
     """
-    def _effect(context, agent):
+    name = "life -{}"
+    optional = False
+
+    def __init__(self, num):
+        super().__init__(num)
+        self.name = NegLife.name.format(num)
+
+    def after_battle_effect(self, context, agent):
         """ See module docstring.
         """
-        context.life -= num
-
-    return Base("life -", _effect, False)
+        context.life -= self._num
 
 
-def stop():
+class Stop(Base):
     """ Stop draw free card immediatly.
     """
-    return Base("stop", _null_effect, False, True)
+    name = "stop"
+    stop_draw = True
