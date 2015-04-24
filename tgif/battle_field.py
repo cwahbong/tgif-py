@@ -97,4 +97,4 @@ class BattleField:
         return self.health_lose() == 0
 
     def health_lose(self):
-        return self.fighting_value - self._enemy.hazard_value
+        return max(0, self._enemy.hazard_value(self._step) - self.fighting_value)

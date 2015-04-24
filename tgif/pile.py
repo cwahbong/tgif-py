@@ -24,7 +24,8 @@ class Pile:
         return self._cards.pop()
 
     def multidraw(self, num):
-        return [self._cards.pop() for _ in range(num)]
+        draw_num = min(len(self._cards), num)
+        return [self._cards.pop() for _ in range(draw_num)]
 
     def put_top(self, card):
         """ Put a card at the top of pile.
@@ -54,6 +55,9 @@ class Pile:
         all_cards = self._cards + self._discards
         random.shuffle(all_cards)
         return all_cards
+
+    def __len__(self):
+        return len(self._cards)
 
 
 def shuffled(cards):

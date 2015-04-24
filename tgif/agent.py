@@ -90,12 +90,14 @@ class File(Base):
             action = self._input()
             if action == "draw":
                 self._print("Draw a card, not yet implemented.")
+                yield None
             elif action == "use":
                 idx = self.select_card(visible, visible.cards)
                 visible.cards[idx].use()
                 self._print("Use a card.")
             elif action == "end":
                 self._print("End the battle.")
+                self._print("life = {}".format(visible.life))
                 break
             else:
                 self._print("Invalid action \"{}\"".format(action))

@@ -70,6 +70,9 @@ class FightingCard:
 
     # TODO other functions in hazard
 
+    def hazard_value(self, step):
+        return self._hazard.hazard_value(step)
+
     def __str__(self):
         return "FightingCard F<{}> D<{}> A<{}>".format(
             self.fighting_value,

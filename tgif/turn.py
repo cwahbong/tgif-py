@@ -24,12 +24,11 @@ class Base:
             for action in agent.battle(context, fight):
                 action(context)
             if context.battle_field.won():
-                context.own_pile.discard(fight)
+                context.piles.own.discard(fight)
             else:
                 damage = context.battle_field.health_lose()
-                context.adventure_pile.discard(fight)
+                context.piles.adventure.discard(fight)
                 context.life -= damage
-                agent.discard(context, damage)
         self._end(context, agent)
 
     def game_ended(self, context):
@@ -49,7 +48,7 @@ class Pirate(Base):
         pass
 
     def game_ended(self, context):
-        return len(context.pirate_pile) == 0
+        return len(context.piles.pirate) == 0
 
 
 class Adventure(Base):
@@ -72,12 +71,12 @@ class Adventure(Base):
             return adventures[idx]
 
     def _end(self, context, agent):
-        if len(context.comp.adventure_pile) == 0:
+        if len(context.piles.adventure) == 0:
             if self._count == 2:
                 context.turn = Pirate()
             else:
                 self._count += 1
-            context.adventure_pile.prepare()
+            context.piles.adventure.prepare()
 
     def game_ended(self, context):
         return False

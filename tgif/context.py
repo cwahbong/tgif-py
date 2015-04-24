@@ -45,6 +45,6 @@ class Context:
             """
             return -5 if card.destroy_value == 2 else card.fighting_value
         life_score = self.life * 5
-        own_pile_score = sum(_own_score(card) for card in self.piles.own.all_cards())
+        own_pile_score = sum(_own_score(card) for card in self.piles.own.all_cards)
         pirate_score = len(self.piles.pirate.discarded_cards()) * 5
         return life_score + own_pile_score + pirate_score
