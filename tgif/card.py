@@ -77,15 +77,26 @@ class FightingCard:
         return self._hazard.hazard_value(step)
 
     @property
+    def free_cards_num(self):
+        return self._hazard.free_cards_num
+
+    @property
     def hazard_values(self):
         return self._hazard.hazard_values()
 
     def __str__(self):
-        return "FightingCard F<{}> D<{}> [{}] A<{}>".format(
-            self.fighting_value,
-            self.destroy_value,
-            "|".join(str(v) for v in self.hazard_values),
-            self._knowledge._ability.name)
+        if self._hazard:
+            return "FightingCard f<{}> F<{}> D<{}> [{}] A<{}>".format(
+                self.free_cards_num,
+                self.fighting_value,
+                self.destroy_value,
+                "|".join(str(v) for v in self.hazard_values),
+                self._knowledge._ability.name)
+        else:
+            return "Fighting Card F<{}> D<{}> A<{}>".format(
+                self.fighting_value,
+                self.destroy_value,
+                self._knowledge._ability.name)
 
 
 def starting(fighting_value, fighting_ability=ability.Null()):

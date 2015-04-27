@@ -1,5 +1,7 @@
 """ An agent does actions in a game.
 """
+from tgif import action
+
 import sys
 
 class Base:
@@ -84,23 +86,46 @@ class File(Base):
         self._print("Select card <index>:")
         return self._select(visible, cards)
 
-    def battle(self, visible, enemy):
+    def prepare_battle(self, visible, enemy, action_factory):
         while True:
             # TODO print current drawn card.
+            free_num = len(visible.battle_field.get_free())
+            print(visible.battle_field.get_free())
+            self._print("Free: {}/{}".format(free_num, visible.battle_field.free_limit))
+            self._print("Drawn free:")
+            for idx, card in enumerate(visible.battle_field.get_free(), 1):
+                self._print("{}. {}".format(idx, card._card))
             self._print("Select action (draw/use/end):")
-            action = self._input()
-            if action == "draw":
-                self._print("Draw a card, not yet implemented.")
-                yield None
-            elif action == "use":
-                idx = self.select_card(visible, visible.cards)
-                visible.cards[idx].use()
+            act = self._input()
+            if act == "draw free":
+                self._print("Draw a card.")
+                yield action_factory.draw_free()
+            elif act == "draw additional":
+                yield action_factory.draw_additional()
+            elif act == "use":
+                # idx = self.select_card(visible, visible.cards)
+                # visible.cards[idx].use()
                 self._print("Use a card.")
-            elif action == "end":
+                yield action_factory.use(idx)
+            elif act == "end":
+                self._print("End the preparation.")
+                break
+            else:
+                self._print("Invalid action \"{}\"".format(act))
+
+    def battle(self, context, enemy):
+        while True:
+            self._print("Select action (draw/use/end):")
+            act = self._input()
+            if act == "use":
+                self._print("Use a card, not implemented yet.")
+                yield "use"
+            elif act == "end":
                 self._print("End the battle.")
                 break
             else:
-                self._print("Invalid action \"{}\"".format(action))
+                self._print("Invalid action \"{}\"".format(act))
+
 
 def console():
     return File(sys.stdin, sys.stdout)

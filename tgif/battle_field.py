@@ -42,7 +42,7 @@ class BattleField:
 
     @property
     def free_limit(self):
-        return self._enemy.free_cards_num()
+        return self._enemy.free_cards_num
 
     @property
     def additional_limit(self):

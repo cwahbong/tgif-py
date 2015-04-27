@@ -1,6 +1,8 @@
 """ Turn represents a minimum unit of flow in the game.
 """
 
+from tgif import action
+
 class Base:
     """ A base turn.
     """
@@ -71,8 +73,11 @@ class Battle(Base):
         fight = self._get_fight()
         if fight is not None:
             self._context.battle_field.new_battle(fight)
-            for action in self._agent.battle(self._context, fight):
-                action(self._context)
+            for act in self._agent.prepare_battle(
+                    self._context, fight, action.Factory(self._context)):
+                act()
+            for act in self._agent.battle(self._context, fight):
+                act()
             if self._context.battle_field.won():
                 self._context.piles.own.discard(fight)
             else:
