@@ -1,7 +1,7 @@
 """ Context holds all data that will be affected by the game flow and agent.
 """
 
-from tgif import battle_field, exception, pile, turn
+from tgif import battle_field, pile
 
 
 def starting_life(level):
@@ -16,7 +16,6 @@ class Context:
     def __init__(self, level):
         self._life = starting_life(level)
         self.piles = pile.Piles(level)
-        self.turn = turn.Adventure()
         self.battle_field = battle_field.BattleField()
 
     @property
@@ -27,14 +26,11 @@ class Context:
 
     @life.setter
     def life(self, value):
-        """ Set current life, to maximum of 22.  Raise tgif.exception.GameOver
-        if the life is negative.
+        """ Set current life, to maximum of 22.
         """
         self._life = value
         if self._life > 22:
             self._life = 22
-        elif self._life < 0:
-            raise exception.GameOver()
 
     @property
     def score(self):

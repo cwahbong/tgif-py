@@ -3,7 +3,7 @@
 
 import collections
 
-from tgif import context, exception
+from tgif import context, turn_manager
 
 
 Result = collections.namedtuple('Result', ['won', 'score'])
@@ -17,19 +17,30 @@ class Friday:
 
     def __init__(self, level, agent):
         self._context = context.Context(level)
-        self._agent = agent
+        self._turn_manager = turn_manager.TurnManager(self._context, agent)
         self._won = False
+
+    @property
+    def life(self):
+        """ Get life. """
+        return self._context.life
+
+    @property
+    def score(self):
+        """ Get score. """
+        return self._context.score
+
+    @property
+    def piles(self):
+        """ Get all piles. """
+        return self._context.piles
 
     def start(self):
         """ Start the game.
         """
-        self._won = False
-        try:
-            while not self._context.turn.game_ended(self._context):
-                self._context.turn.execute(self._context, self._agent)
-            self._won = True
-        except exception.GameOver:
-            pass
+        while not self._turn_manager.game_ended():
+            self._turn_manager.perform_turn()
+        self._won = self._turn_manager.game_won()
         return self.result
 
     @property

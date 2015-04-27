@@ -86,6 +86,7 @@ class File(Base):
 
     def battle(self, visible, enemy):
         while True:
+            # TODO print current drawn card.
             self._print("Select action (draw/use/end):")
             action = self._input()
             if action == "draw":
@@ -97,7 +98,6 @@ class File(Base):
                 self._print("Use a card.")
             elif action == "end":
                 self._print("End the battle.")
-                self._print("life = {}".format(visible.life))
                 break
             else:
                 self._print("Invalid action \"{}\"".format(action))
