@@ -51,6 +51,9 @@ class Hazard:
         """
         return self._hazard_values[step]
 
+    def hazard_values(self):
+        return iter(self._hazard_values)
+
 
 class FightingCard:
 
@@ -73,10 +76,15 @@ class FightingCard:
     def hazard_value(self, step):
         return self._hazard.hazard_value(step)
 
+    @property
+    def hazard_values(self):
+        return self._hazard.hazard_values()
+
     def __str__(self):
-        return "FightingCard F<{}> D<{}> A<{}>".format(
+        return "FightingCard F<{}> D<{}> [{}] A<{}>".format(
             self.fighting_value,
             self.destroy_value,
+            "|".join(str(v) for v in self.hazard_values),
             self._knowledge._ability.name)
 
 
