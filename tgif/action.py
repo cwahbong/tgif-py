@@ -21,6 +21,15 @@ class Factory:
             self._context.battle_field.add_additional(card)
         return action
 
+    def destroy(self, battle_card):
+        def action():
+            if battle_card.destroy:
+                return
+            if battle_card._card.destroy_value <= self._context.battle_field.destroyable:
+                battle_card.destroy = True
+                self._context.battle_field.destroyable -= battle_card._card.destroy_value
+        return action
+
 
 def use_effect(free, idx):
     def _action(context):

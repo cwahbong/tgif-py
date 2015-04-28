@@ -126,11 +126,24 @@ class File(Base):
             else:
                 self._print("Invalid action \"{}\"".format(act))
 
-    def battle_result(self, won):
+    def after_battle(self, visible, enemy):
+        while True:
+            self._print("Select action (destroy/end)")
+            act = self._input()
+            if act == "destroy":
+                yield "destroy"
+            elif act == "end":
+                self._print("End the after battle.")
+                break
+            else:
+                self._print("Invalid action \"{}\"".fornmat(act))
+
+    def battle_result(self, won, life):
         if won:
             self._print("Battle won.")
         else:
             self._print("Battle lost.")
+        self._print("Life = {}.".format(life))
 
 
 def console():

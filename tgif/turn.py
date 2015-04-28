@@ -78,14 +78,26 @@ class Battle(Base):
                 act()
             for act in self._agent.battle(self._context, fight):
                 act()
+
             if self._context.battle_field.won():
                 self._context.piles.own.discard(fight)
             else:
-                damage = self._context.battle_field.health_lose()
                 self._context.piles.adventure.discard(fight)
-                self._context.life -= damage
-            self._agent.battle_result(self._context.battle_field.won())
-            print("life = {}".format(self._context.life))
+            damage = self._context.battle_field.health_lose()
+            self._context.life -= damage
+
+            for act in self._agent.after_battle(self._context, fight):
+                act()
+
+            for card in self._context.battle_field.get_free():
+                if not card.destroyed:
+                    self._context.piles.own.discard(card._card)
+            for card in self._context.battle_field.get_additional():
+                if not card.destroyed:
+                    self._context.piles.own.discard(card._card)
+            self._agent.battle_result(
+                self._context.battle_field.won(),
+                self._context.life)
 
     def game_ended(self):
         return False
