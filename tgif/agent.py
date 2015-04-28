@@ -126,6 +126,12 @@ class File(Base):
             else:
                 self._print("Invalid action \"{}\"".format(act))
 
+    def battle_result(self, won):
+        if won:
+            self._print("Battle won.")
+        else:
+            self._print("Battle lost.")
+
 
 def console():
     return File(sys.stdin, sys.stdout)

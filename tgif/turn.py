@@ -84,6 +84,7 @@ class Battle(Base):
                 damage = self._context.battle_field.health_lose()
                 self._context.piles.adventure.discard(fight)
                 self._context.life -= damage
+            self._agent.battle_result(self._context.battle_field.won())
             print("life = {}".format(self._context.life))
 
     def game_ended(self):
