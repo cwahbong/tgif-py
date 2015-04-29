@@ -1,9 +1,8 @@
 """
 """
 
+import collections
 import random
-
-from tgif import cards
 
 
 class Pile:
@@ -66,37 +65,9 @@ def shuffled(cards):
     return Pile(new_cards)
 
 
-def aging(level):
-    difficult_agings = list(cards.difficult_agings())
-    random.shuffle(difficult_agings)
-    normal_agings = list(cards.normal_agings())
-    if level < 3:
-        normal_agings = normal_agings[:-1]
-    random.shuffle(normal_agings)
-    return Pile(difficult_agings + normal_agings)
-
-
-def own(level, aging_pile):
-    startings = cards.startings()
-    if level >= 2:
-        startings.append(aging_pile.draw())
-    return shuffled(startings)
-
-
-def adventure():
-    return shuffled(cards.adventures())
-
-
-def pirate():
-    assert len(cards.pirates()) >= 2
-    return Pile(random.sample(cards.pirates(), 2))
-
-
-class Piles:
-    """ All card piles here.
-    """
-    def __init__(self, level):
-        self.aging = aging(level)
-        self.own = own(level, self.aging)
-        self.adventure = adventure()
-        self.pirate = pirate()
+Piles = collections.namedtuple("Piles", [
+    "adventure",
+    "aging",
+    "own",
+    "pirate",
+    ])

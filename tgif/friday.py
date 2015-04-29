@@ -3,7 +3,7 @@
 
 import collections
 
-from tgif import context, turn_manager
+from tgif import component_factory, context, turn_manager
 
 
 Result = collections.namedtuple('Result', ['won', 'score'])
@@ -16,7 +16,7 @@ class Friday:
     """
 
     def __init__(self, level, agent):
-        self._context = context.Context(level)
+        self._context = context.Context(component_factory.ByLevel(level))
         self._turn_manager = turn_manager.TurnManager(self._context, agent)
         self._won = False
 

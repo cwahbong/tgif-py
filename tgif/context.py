@@ -1,21 +1,16 @@
 """ Context holds all data that will be affected by the game flow and agent.
 """
 
-from tgif import battle_field, pile
-
-
-def starting_life(level):
-    """ Get the initial life by given level.
-    """
-    return 20 if level < 4 else 18
+from tgif import battle_field, component_factory
 
 
 class Context:
     """ See module doc.
     """
-    def __init__(self, level):
-        self._life = starting_life(level)
-        self.piles = pile.Piles(level)
+    def __init__(self, comp_factory):
+        self._life = comp_factory.life()
+        self._max_life = comp_factory.max_life()
+        self._piles = comp_factory.piles()
         self.battle_field = battle_field.BattleField()
 
     @property
@@ -26,11 +21,15 @@ class Context:
 
     @life.setter
     def life(self, value):
-        """ Set current life, to maximum of 22.
+        """ Set current life.
         """
-        self._life = value
-        if self._life > 22:
-            self._life = 22
+        self._life = min(value, self._max_life)
+
+    @property
+    def piles(self):
+        """ Get all piles.
+        """
+        return self._piles
 
     @property
     def score(self):
