@@ -3,7 +3,7 @@
 
 import collections
 
-from tgif import component_factory, context, turn_manager
+from tgif import component_factory, context, turn
 
 
 Result = collections.namedtuple('Result', ['won', 'score'])
@@ -16,31 +16,38 @@ class Friday:
     """
 
     def __init__(self, level, agent):
-        self._context = context.Context(component_factory.ByLevel(level))
-        self._turn_manager = turn_manager.TurnManager(self._context, agent)
+        self._level = level
+        self._context = None
+        self._agent = agent
         self._won = False
 
     @property
     def life(self):
         """ Get life. """
-        return self._context.life
+        # TODO raise GameNotRunException
+        return None if self._context is None else self._context.life
 
     @property
     def score(self):
         """ Get score. """
-        return self._context.score
+        # TODO raise GameNotRunException
+        return None if self._context is None else self._context.score
 
     @property
     def piles(self):
         """ Get all piles. """
-        return self._context.piles
+        # TODO raise GameNotRunException
+        return None if self._context is None else self._context.piles
 
     def start(self):
-        """ Start the game.
+        """ Run the game.
         """
-        while not self._turn_manager.game_ended():
-            self._turn_manager.perform_turn()
-        self._won = self._turn_manager.game_won()
+        self._context = context.Context(component_factory.ByLevel(self._level))
+        cur_turn = turn.Starting(self._context, self._agent)
+        while not cur_turn.game_ended():
+            cur_turn = cur_turn.next()
+            cur_turn.perform()
+        self._won = cur_turn.game_won()
         return self.result
 
     @property

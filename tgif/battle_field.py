@@ -39,6 +39,7 @@ class BattleField:
         self._additional_cards = []
         self._additional_limit = 0
         self._step = step
+        self._draw_end = False
 
     @property
     def free_limit(self):
@@ -57,12 +58,18 @@ class BattleField:
         if value >= 0:
             self._step = value
 
+    @property
+    def draw_end(self):
+        return self._draw_end
+
     def new_battle(self, enemy=None):
+        # TODO set the step
         if self._enemy is not None:
             self._free_cards = []
             self._additional_cards = []
             self._additional_limit = 0
         self._enemy = enemy
+        self._draw_end = False
 
     def add_free(self, card):
         if len(self._free_cards) >= self.free_limit:

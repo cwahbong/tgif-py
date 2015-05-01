@@ -1,16 +1,21 @@
+""" Action enums.
+"""
 
-class Factory:
+import enum
+
+
+class Action(enum.Enum):
+    draw_free = 1
+    draw_additional = 2
+    use = 3
+    destroy = 4
+    end_draw = 5
+    end_fight = 6
+
+
+class _Drawing:
     def __init__(self, context):
         self._context = context
-
-    def draw_free(self):
-        """ Draw a free card.
-        """
-        def action():
-            """ Inner. """
-            card = self._context.piles.own.draw()
-            self._context.battle_field.add_free(card)
-        return action
 
     def draw_additional(self):
         """ Draw an additional card.

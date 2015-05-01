@@ -62,42 +62,50 @@ class Ending(Base):
 class Battle(Base):
     """A turn that contains a battle."""
 
-    def _get_fight(self):
-        """ Get a fight card by given context.
+    def _get_enemy(self):
+        """ Get an enemy card by given context.
         """
         raise NotImplementedError()
+
+    def _player_fighting(self, fight):
+        for act, add_info in self._agent.battle_fighting(self._context, fight):
+            self._context.operate(act, add_info)
+
+    def _finish_fight(self, fight):
+        if self._context.battle_field.won():
+            self._context.piles.own.discard(fight)
+        else:
+            self._context.piles.adventure.discard(fight)
+        damage = self._context.battle_field.health_lose()
+        self._context.life -= damage
+
+    def _player_destroying(self, fight):
+        for act, add_info in self._agent.battle_destroying(self._context, fight):
+            self._context.operate(act, add_info)
 
     def perform(self):
         """ Execute a turn.
         """
-        fight = self._get_fight()
-        if fight is not None:
-            self._context.battle_field.new_battle(fight)
-            for act in self._agent.prepare_battle(
-                    self._context, fight, action.Factory(self._context)):
-                act()
-            for act in self._agent.battle(self._context, fight):
-                act()
+        enemy = self._get_enemy()
+        if enemy is not None:
+            self._context.battle_field.new_battle(enemy)
 
-            if self._context.battle_field.won():
-                self._context.piles.own.discard(fight)
-            else:
-                self._context.piles.adventure.discard(fight)
-            damage = self._context.battle_field.health_lose()
-            self._context.life -= damage
+            self._player_fighting(enemy)
+            self._finish_fight(enemy)
+            self._agent.battle_result(
+                self._context.battle_field.won(),
+                self._context.life)
+            self._player_destroying(enemy)
 
-            for act in self._agent.after_battle(self._context, fight):
-                act()
-
+            # self._context.battle_field.cleanup()
+            """
             for card in self._context.battle_field.get_free():
                 if not card.destroyed:
                     self._context.piles.own.discard(card._card)
             for card in self._context.battle_field.get_additional():
                 if not card.destroyed:
                     self._context.piles.own.discard(card._card)
-            self._agent.battle_result(
-                self._context.battle_field.won(),
-                self._context.life)
+            """
 
     def game_ended(self):
         return False
@@ -106,7 +114,7 @@ class Battle(Base):
 class Pirate(Battle):
     """ A turn that encounters a pirate card.
     """
-    def _get_fight(self):
+    def _get_enemy(self):
         pirates = None # TODO Take pirates from context
         return self._agent.select_one(self._context, pirates)
 
@@ -131,7 +139,7 @@ class Adventure(Battle):
                 self._context.piles.adventure.prepare()
         return self
 
-    def _get_fight(self):
+    def _get_enemy(self):
         adventures = self._context.piles.adventure.multidraw(2)
         if len(adventures) == 1:
             if self._agent.optional_enemy(self._context, adventures[0]):
@@ -143,4 +151,3 @@ class Adventure(Battle):
             while idx is None:
                 idx = self._agent.select_enemy(self._context, adventures)
             return adventures[idx]
-

@@ -4,6 +4,7 @@ from tgif import action
 
 import sys
 
+
 class Base:
     """ Agent interface.
     """
@@ -23,8 +24,13 @@ class Base:
         """
         raise NotImplementedError()
 
-    def battle(self, visible, enemy):
+    def battle_fighting(self, visible, enemy):
         """ Generates battle actions.
+        """
+        raise NotImplementedError()
+
+    def battle_destroying(self, visible, enemy):
+        """ Generates battle destroy actions.
         """
         raise NotImplementedError()
 
@@ -48,6 +54,19 @@ class File(Base):
         """ Print string in a line.
         """
         self._o_file.write("{}\n".format(string))
+
+    def _print_battle_stat(self, visible):
+        self._print("--- Life = {} ---".format(visible.life))
+
+        free_num = len(visible.battle_field.get_free())
+        self._print("--- Free {}/{} ---".format(free_num, visible.battle_field.free_limit))
+        for idx, card in enumerate(visible.battle_field.get_free(), 1):
+            self._print("{}. {}".format(idx, card._card))
+
+        add_num = len(visible.battle_field.get_additional())
+        self._print("--- Additional {}/{} ---".format(add_num, visible.battle_field.additional_limit))
+        for idx, card in enumerate(visible.battle_field.get_additional(), 1):
+            self._print("{}. {}".format(idx, card._card))
 
     def optional_enemy(self, visible, enemy):
         self._print("Optional enemy [Y/N]:")
@@ -86,59 +105,40 @@ class File(Base):
         self._print("Select card <index>:")
         return self._select(visible, cards)
 
-    def prepare_battle(self, visible, enemy, action_factory):
+    def battle_fighting(self, visible, enemy):
         while True:
-            # TODO print current drawn card.
-            free_num = len(visible.battle_field.get_free())
-            print(visible.battle_field.get_free())
-            self._print("Free: {}/{}".format(free_num, visible.battle_field.free_limit))
-            self._print("Drawn free:")
-            for idx, card in enumerate(visible.battle_field.get_free(), 1):
-                self._print("{}. {}".format(idx, card._card))
-            self._print("Select action (draw/use/end):")
+            self._print_battle_stat(visible)
+            self._print("Select action (draw free/draw additional/use/end draw/end fight):")
             act = self._input()
             if act == "draw free":
-                self._print("Draw a card.")
-                yield action_factory.draw_free()
+                yield action.Action.draw_free, None
             elif act == "draw additional":
-                yield action_factory.draw_additional()
+                yield action.Action.draw_additional, None
             elif act == "use":
-                # idx = self.select_card(visible, visible.cards)
+                idx = self.select_card(visible, visible.cards)
                 # visible.cards[idx].use()
-                self._print("Use a card.")
-                yield action_factory.use(idx)
-            elif act == "end":
-                self._print("End the preparation.")
+                yield action.Action.use, idx
+            elif act == "end draw":
+                yield action.Action.end_draw, None
+            elif act == "end fight":
                 break
             else:
                 self._print("Invalid action \"{}\"".format(act))
 
-    def battle(self, context, enemy):
-        while True:
-            self._print("Select action (draw/use/end):")
-            act = self._input()
-            if act == "use":
-                self._print("Use a card, not implemented yet.")
-                yield "use"
-            elif act == "end":
-                self._print("End the battle.")
-                break
-            else:
-                self._print("Invalid action \"{}\"".format(act))
-
-    def after_battle(self, visible, enemy):
+    def battle_destroying(self, visible, enemy):
         while True:
             self._print("Select action (destroy/end)")
             act = self._input()
             if act == "destroy":
-                yield "destroy"
+                yield action.Action.destroy, None
             elif act == "end":
-                self._print("End the after battle.")
                 break
             else:
-                self._print("Invalid action \"{}\"".fornmat(act))
+                self._print("Invalid action \"{}\"".format(act))
 
     def battle_result(self, won, life):
+        """ Called upon the battle is end.
+        """
         if won:
             self._print("Battle won.")
         else:
