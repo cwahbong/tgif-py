@@ -21,7 +21,7 @@ def adventures():
     """
     return itertools.chain(
         # level 1
-        [card.adventure(1, 0, ability.BelowThePile())] * 1,
+        [card.adventure(1, 0, ability.BelowThePile())]   * 1,
         [card.adventure(1, 0, ability.Cards(2))]         * 2,
         [card.adventure(1, 0, ability.Copy())]           * 1,
         [card.adventure(1, 0, ability.Destroy())]        * 1,
@@ -29,7 +29,7 @@ def adventures():
         [card.adventure(1, 0, ability.Life(1))]          * 2,
         [card.adventure(1, 0, ability.Step())]           * 1,
         # level 2
-        [card.adventure(2, 1, ability.BelowThePile())] * 1,
+        [card.adventure(2, 1, ability.BelowThePile())]   * 1,
         [card.adventure(2, 1, ability.Copy())]           * 1,
         [card.adventure(2, 1, ability.Destroy())]        * 1,
         [card.adventure(2, 1, ability.Double())]         * 1,
@@ -55,8 +55,8 @@ def normal_agings():
     """ All normal aging cards.
     """
     return itertools.chain(
-        [card.aging(0, ability.HighestZero())] * 2,
-        [card.aging(0, ability.NegLife(1))]    * 1,
+        [card.aging(0, ability.HighestZero())]  * 2,
+        [card.aging(0, ability.NegLife(1))]     * 1,
         [card.aging(0, ability.Stop())]         * 1,
         [card.aging(-1)]                        * 1,
         [card.aging(-2)]                        * 2,
